@@ -27,6 +27,13 @@ Devvit.addSettings([
     isSecret: true,
     scope: SettingScope.App,
   },
+  {
+    name: 'VIBEMOD_DASHBOARD_URL',
+    label: 'VibeModerator OS Dashboard URL',
+    type: 'string',
+    isSecret: false,
+    scope: SettingScope.App,
+  },
 ]);
 
 // ============================================================
@@ -275,8 +282,8 @@ Devvit.addMenuItem({
   forUserType: 'moderator',
   onPress: async (_, context) => {
     const subreddit = await context.reddit.getCurrentSubreddit();
-    const backendUrl = (await context.settings.get('VIBEMOD_BACKEND_URL')) || 'http://localhost:8080';
-    await context.ui.navigateTo(`${backendUrl}?subreddit=${subreddit.name}`);
+    const dashboardUrl = (await context.settings.get('VIBEMOD_DASHBOARD_URL')) || 'http://localhost:5173';
+    await context.ui.navigateTo(`${dashboardUrl}?subreddit=${subreddit.name}`);
   },
 });
 
@@ -348,7 +355,7 @@ Devvit.addMenuItem({
   onPress: async (_, context) => {
     try {
       const subreddit = await context.reddit.getCurrentSubreddit();
-      const backendUrl = (await context.settings.get('VIBEMOD_BACKEND_URL')) || 'http://localhost:8080';
+      const dashboardUrl = (await context.settings.get('VIBEMOD_DASHBOARD_URL')) || 'http://localhost:5173';
 
       await context.reddit.submitPost({
         subredditName: subreddit.name,
@@ -358,7 +365,7 @@ Devvit.addMenuItem({
           '',
           'AI-powered moderation is running to keep this subreddit safe.',
           '',
-          `**Dashboard:** ${backendUrl}`,
+          `**Dashboard:** ${dashboardUrl}`,
           '',
           `*Posted by VibeModerator OS at ${new Date().toUTCString()}*`,
         ].join('\n'),
