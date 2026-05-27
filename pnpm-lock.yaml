@@ -79,7 +79,7 @@ importers:
   apps/devvit:
     dependencies:
       '@devvit/public-api':
-        specifier: ^0.13.0
+        specifier: 0.13.0
         version: 0.13.0
     devDependencies:
       '@types/node':
