@@ -1,0 +1,19 @@
+{
+  "name": "@vibemod/db",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "generate": "prisma generate --schema=src/schema/schema.prisma",
+    "migrate": "prisma migrate dev --schema=src/schema/schema.prisma",
+    "seed": "ts-node src/seed/seed.ts",
+    "studio": "prisma studio --schema=src/schema/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.10.0",
+    "ts-node": "^10.9.0"
+  }
+}

@@ -1,0 +1,17 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  core-js: true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
+  protobufjs: true
+minimumReleaseAgeExclude:
+  - '@devvit/metrics@0.13.0'
+  - '@devvit/protos@0.13.0'
+  - '@devvit/public-api@0.13.0'
+  - '@devvit/shared-types@0.13.0'
+  - '@devvit/shared@0.13.0'

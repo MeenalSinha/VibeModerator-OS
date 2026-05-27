@@ -1,0 +1,1 @@
+export { brigadeRouter } from './index';

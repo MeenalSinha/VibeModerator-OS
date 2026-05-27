@@ -1,0 +1,22 @@
+name: vibemoderator-os
+version: 0.0.2
+description: >-
+  VibeModerator OS — AI-powered moderation operating system for Reddit
+  communities
+
+products:
+  - sku: vibemod_pro
+    displayName: VibeModerator Pro
+    description: AI-powered moderation with unlimited rules and advanced analytics
+    type: RECURRING
+permissions:
+  - name: posts
+    access: read_write
+  - name: comments
+    access: read_write
+  - name: modActions
+    access: read_write
+  - name: users
+    access: read
+  - name: subredditConfig
+    access: read

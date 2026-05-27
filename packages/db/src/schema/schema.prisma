@@ -1,0 +1,398 @@
+// ============================================================
+// VibeModerator OS — Prisma Database Schema
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Core Models
+// ============================================================
+
+model Subreddit {
+  id                  String   @id @default(cuid())
+  redditId            String   @unique
+  name                String   @unique
+  displayName         String
+  subscriberCount     Int      @default(0)
+  activeUserCount     Int      @default(0)
+  type                String   @default("public")
+  healthScore         Float    @default(0.5)
+  integratedAt        DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Settings
+  autoModerationEnabled Boolean @default(true)
+  aiAssistEnabled       Boolean @default(true)
+  raidDetectionEnabled  Boolean @default(true)
+  shadowScopeEnabled    Boolean @default(true)
+  toxicityThreshold     Float   @default(0.7)
+  slowModeEnabled       Boolean @default(false)
+  slowModeSeconds       Int     @default(300)
+
+  // Relations
+  rules              ModerationRule[]
+  workflows          Workflow[]
+  raidEvents         RaidEvent[]
+  suspiciousAccounts SuspiciousAccount[]
+  modQueueItems      ModQueueItem[]
+  modTasks           ModTask[]
+  analyticsReports   AnalyticsReport[]
+  moderators         SubredditModerator[]
+  moderationEvents   ModerationEvent[]
+
+  @@map("subreddits")
+}
+
+model ModeratorUser {
+  id              String   @id @default(cuid())
+  redditUsername  String   @unique
+  redditId        String   @unique
+  email           String?  @unique
+  avatarUrl       String?
+  preferences     Json     @default("{}")
+  createdAt       DateTime @default(now())
+  lastActiveAt    DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  subreddits       SubredditModerator[]
+  createdRules     ModerationRule[]     @relation("RuleCreator")
+  createdWorkflows Workflow[]           @relation("WorkflowCreator")
+  modTasks         ModTask[]            @relation("TaskAssignee")
+  createdTasks     ModTask[]            @relation("TaskCreator")
+  auditLogs        AuditLog[]
+
+  @@map("moderator_users")
+}
+
+model SubredditModerator {
+  id          String   @id @default(cuid())
+  subredditId String
+  userId      String
+  role        String   @default("mod")
+  permissions Json     @default("[]")
+  joinedAt    DateTime @default(now())
+
+  subreddit Subreddit     @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  user      ModeratorUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([subredditId, userId])
+  @@map("subreddit_moderators")
+}
+
+// ============================================================
+// Moderation Rules
+// ============================================================
+
+model ModerationRule {
+  id                    String   @id @default(cuid())
+  subredditId           String
+  name                  String
+  description           String   @default("")
+  naturalLanguageInput  String
+  parsedConditions      Json
+  actions               Json
+  triggers              Json
+  status                String   @default("draft")
+  confidence            Float    @default(0.0)
+  priority              Int      @default(3)
+  aiExplanation         String   @default("")
+  warnings              Json     @default("[]")
+  conflicts             Json     @default("[]")
+  optimizationSuggestions Json   @default("[]")
+  estimatedFalsePositiveRate Float @default(0.0)
+  estimatedCoverage     Float    @default(0.0)
+  totalMatches          Int      @default(0)
+  actionsApplied        Int      @default(0)
+  falsePositives        Int      @default(0)
+  appealsCount          Int      @default(0)
+  lastTriggeredAt       DateTime?
+  createdById           String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  subreddit  Subreddit     @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  createdBy  ModeratorUser @relation("RuleCreator", fields: [createdById], references: [id])
+
+  @@index([subredditId, status])
+  @@map("moderation_rules")
+}
+
+// ============================================================
+// Workflows
+// ============================================================
+
+model Workflow {
+  id          String   @id @default(cuid())
+  subredditId String
+  name        String
+  description String   @default("")
+  nodes       Json
+  edges       Json
+  status      String   @default("draft")
+  version     Int      @default(1)
+  history     Json     @default("[]")
+  executions  Int      @default(0)
+  successRate Float    @default(0.0)
+  avgExecTime Float    @default(0.0)
+  lastExecAt  DateTime?
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subreddit Subreddit     @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  createdBy ModeratorUser @relation("WorkflowCreator", fields: [createdById], references: [id])
+
+  @@index([subredditId, status])
+  @@map("workflows")
+}
+
+// ============================================================
+// Mod Queue
+// ============================================================
+
+model ModQueueItem {
+  id              String    @id @default(cuid())
+  subredditId     String
+  type            String
+  contentId       String
+  contentPreview  String
+  authorUsername  String
+  reportedAt      DateTime  @default(now())
+  priority        String    @default("medium")
+  aiRecommendation String
+  aiConfidence    Float     @default(0.0)
+  aiReasoning     String    @default("")
+  toxicityScore   Float     @default(0.0)
+  assignedTo      String?
+  status          String    @default("pending")
+  resolvedAt      DateTime?
+  resolvedBy      String?
+  resolvedAction  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  subreddit Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+
+  @@index([subredditId, status])
+  @@index([subredditId, priority])
+  @@map("mod_queue_items")
+}
+
+// ============================================================
+// Raid Events
+// ============================================================
+
+model RaidEvent {
+  id             String    @id @default(cuid())
+  subredditId    String
+  detectedAt     DateTime  @default(now())
+  status         String    @default("suspected")
+  severity       String    @default("medium")
+  indicators     Json
+  affectedPosts  Json      @default("[]")
+  suspectedOrigin String?
+  usersInvolved  Int       @default(0)
+  actionsApplied Json      @default("[]")
+  resolvedAt     DateTime?
+  resolvedBy     String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  subreddit Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+
+  @@index([subredditId, status])
+  @@map("raid_events")
+}
+
+// ============================================================
+// ShadowScope — Suspicious Accounts
+// ============================================================
+
+model SuspiciousAccount {
+  id              String    @id @default(cuid())
+  subredditId     String
+  username        String
+  detectedAt      DateTime  @default(now())
+  riskScore       Float     @default(0.0)
+  indicators      Json
+  linkedAccounts  Json      @default("[]")
+  status          String    @default("investigating")
+  actionTaken     String?
+  reasoning       String    @default("")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  subreddit Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+
+  @@index([subredditId, status])
+  @@map("suspicious_accounts")
+}
+
+// ============================================================
+// Analytics
+// ============================================================
+
+model AnalyticsReport {
+  id                    String   @id @default(cuid())
+  subredditId           String
+  periodStart           DateTime
+  periodEnd             DateTime
+  metrics               Json
+  toxicityTrends        Json     @default("[]")
+  moderationActivity    Json     @default("[]")
+  topRules              Json     @default("[]")
+  userTrustDistribution Json
+  insights              Json     @default("[]")
+  generatedAt           DateTime @default(now())
+  createdAt             DateTime @default(now())
+
+  subreddit Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+
+  @@index([subredditId, periodStart])
+  @@map("analytics_reports")
+}
+
+// ============================================================
+// Moderation Events (audit trail)
+// ============================================================
+
+model ModerationEvent {
+  id                String   @id @default(cuid())
+  subredditId       String
+  type              String
+  contentId         String
+  contentType       String
+  authorUsername    String
+  triggeredRuleIds  Json     @default("[]")
+  appliedActions    Json     @default("[]")
+  isAutomated       Boolean  @default(true)
+  moderatorId       String?
+  timestamp         DateTime @default(now())
+  metadata          Json     @default("{}")
+
+  subreddit Subreddit @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+
+  @@index([subredditId, timestamp])
+  @@index([subredditId, type])
+  @@map("moderation_events")
+}
+
+// ============================================================
+// Mod Tasks / Operations Hub
+// ============================================================
+
+model ModTask {
+  id          String    @id @default(cuid())
+  subredditId String
+  title       String
+  description String    @default("")
+  type        String    @default("review")
+  status      String    @default("todo")
+  priority    String    @default("medium")
+  assignedToId String?
+  createdById String
+  dueAt       DateTime?
+  completedAt DateTime?
+  notes       Json      @default("[]")
+  linkedItems Json      @default("[]")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  subreddit  Subreddit     @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  assignedTo ModeratorUser? @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  createdBy  ModeratorUser  @relation("TaskCreator", fields: [createdById], references: [id])
+
+  @@index([subredditId, status])
+  @@map("mod_tasks")
+}
+
+// ============================================================
+// Marketplace
+// ============================================================
+
+model MarketplaceTemplate {
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  authorId     String
+  authorName   String
+  category     String
+  type         String
+  content      Json
+  rating       Float    @default(0.0)
+  ratingCount  Int      @default(0)
+  installCount Int      @default(0)
+  forkCount    Int      @default(0)
+  tags         Json     @default("[]")
+  isVerified   Boolean  @default(false)
+  isPublic     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ratings MarketplaceRating[]
+
+  @@index([category, rating])
+  @@map("marketplace_templates")
+}
+
+model MarketplaceRating {
+  id         String   @id @default(cuid())
+  templateId String
+  userId     String
+  rating     Int
+  review     String?
+  createdAt  DateTime @default(now())
+
+  template MarketplaceTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, userId])
+  @@map("marketplace_ratings")
+}
+
+// ============================================================
+// Audit Logs
+// ============================================================
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String
+  resource    String
+  resourceId  String?
+  changes     Json     @default("{}")
+  ipAddress   String?
+  userAgent   String?
+  timestamp   DateTime @default(now())
+
+  user ModeratorUser @relation(fields: [userId], references: [id])
+
+  @@index([userId, timestamp])
+  @@index([resource, resourceId])
+  @@map("audit_logs")
+}
+
+// ============================================================
+// Copilot Sessions
+// ============================================================
+
+model CopilotSession {
+  id          String   @id @default(cuid())
+  userId      String
+  subredditId String?
+  messages    Json     @default("[]")
+  context     Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("copilot_sessions")
+}

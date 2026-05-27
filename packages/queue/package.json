@@ -1,0 +1,13 @@
+{
+  "name": "@vibemod/queue",
+  "version": "1.0.0",
+  "main": "./src/workers/index.ts",
+  "dependencies": {
+    "@vibemod/shared": "workspace:*",
+    "@vibemod/ai-engine": "workspace:*",
+    "@vibemod/db": "workspace:*",
+    "@prisma/client": "^5.10.0",
+    "bullmq": "^5.4.0",
+    "ioredis": "^5.3.2"
+  }
+}

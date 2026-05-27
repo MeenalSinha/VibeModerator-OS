@@ -1,0 +1,1 @@
+export { hubRouter } from './index';

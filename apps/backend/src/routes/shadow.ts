@@ -1,0 +1,1 @@
+export { shadowRouter } from './index';

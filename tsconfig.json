@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@vibemod/shared/*": ["packages/shared/src/*"],
+      "@vibemod/ai-engine/*": ["packages/ai-engine/src/*"],
+      "@vibemod/db/*": ["packages/db/src/*"],
+      "@vibemod/queue/*": ["packages/queue/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", ".next"]
+}

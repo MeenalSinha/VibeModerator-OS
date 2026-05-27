@@ -1,0 +1,30 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN npm install -g turbo
+
+FROM base AS deps
+COPY package.json turbo.json ./
+COPY apps/backend/package.json ./apps/backend/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/ai-engine/package.json ./packages/ai-engine/
+COPY packages/db/package.json ./packages/db/
+COPY packages/queue/package.json ./packages/queue/
+RUN npm install --workspaces
+
+FROM deps AS builder
+COPY . .
+RUN turbo run build --filter=@vibemod/backend...
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/packages/shared/src ./packages/shared/src
+COPY --from=builder /app/packages/ai-engine/src ./packages/ai-engine/src
+COPY --from=builder /app/packages/db/src ./packages/db/src
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/
+
+EXPOSE 8080
+CMD ["node", "apps/backend/dist/index.js"]

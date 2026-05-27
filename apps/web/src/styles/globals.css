@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 4%;
+    --foreground: 213 31% 91%;
+    --card: 222 47% 6%;
+    --card-foreground: 213 31% 91%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 233 85% 63%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 47% 10%;
+    --secondary-foreground: 213 31% 91%;
+    --muted: 222 47% 10%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 233 85% 63%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 47% 12%;
+    --input: 222 47% 10%;
+    --ring: 233 85% 63%;
+    --radius: 0.6rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  ::selection {
+    @apply bg-primary/30;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  .glass-card {
+    @apply bg-surface-950/80 backdrop-blur-xl border border-white/[0.06] rounded-xl;
+  }
+  .gradient-brand {
+    background: linear-gradient(135deg, #4a60fa 0%, #7c3aed 100%);
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-400 to-purple-400 bg-clip-text text-transparent;
+  }
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+  .status-dot-safe { @apply bg-emerald-400; }
+  .status-dot-low { @apply bg-yellow-400; }
+  .status-dot-medium { @apply bg-orange-400; }
+  .status-dot-high { @apply bg-red-400; }
+  .status-dot-critical { @apply bg-red-500 animate-pulse; }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground transition-all duration-150 hover:text-foreground hover:bg-white/5;
+  }
+  .nav-item-active {
+    @apply text-foreground bg-white/[8%] border border-white/10;
+  }
+  .metric-card {
+    @apply glass-card p-5 flex flex-col gap-2;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-all duration-150;
+    background: linear-gradient(135deg, #4a60fa 0%, #6d3fe8 100%);
+  }
+  .btn-primary:hover {
+    @apply opacity-90 scale-[1.02];
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-white/10 bg-white/5 text-foreground transition-all duration-150 hover:bg-white/10;
+  }
+  .input-base {
+    @apply w-full px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-brand { @apply bg-brand-500/20 text-brand-400 border border-brand-500/30; }
+  .badge-success { @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30; }
+  .badge-warning { @apply bg-yellow-500/20 text-yellow-400 border border-yellow-500/30; }
+  .badge-danger { @apply bg-red-500/20 text-red-400 border border-red-500/30; }
+  .badge-muted { @apply bg-surface-800 text-muted-foreground border border-white/10; }
+
+  .skeleton {
+    @apply animate-shimmer bg-gradient-to-r from-surface-800 via-surface-700 to-surface-800 bg-[length:200%_100%] rounded-lg;
+  }
+  .divider {
+    @apply border-t border-white/[0.06];
+  }
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-muted-foreground;
+  }
+  .page-title {
+    @apply text-2xl font-bold text-foreground;
+  }
+  .page-subtitle {
+    @apply text-sm text-muted-foreground;
+  }
+}
+
+/* React Flow overrides */
+.react-flow__background {
+  background-color: transparent !important;
+}
+.react-flow__node {
+  font-family: Inter, sans-serif;
+}
+.react-flow__edge-path {
+  stroke: rgba(74, 96, 250, 0.6) !important;
+  stroke-width: 2 !important;
+}
+.react-flow__controls {
+  background: rgba(13, 15, 26, 0.9) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 8px !important;
+}
+.react-flow__controls-button {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  fill: rgb(148, 163, 187) !important;
+}
+
+/* Command palette */
+[cmdk-overlay] {
+  @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50;
+}
+[cmdk-dialog] {
+  @apply fixed top-1/4 left-1/2 -translate-x-1/2 w-full max-w-xl z-50;
+}

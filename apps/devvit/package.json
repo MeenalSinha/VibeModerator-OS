@@ -1,0 +1,20 @@
+{
+  "name": "vibemoderator-os",
+  "version": "0.0.0",
+  "private": true,
+  "main": "main.ts",
+  "scripts": {
+    "dev": "devvit playtest",
+    "upload": "devvit upload",
+    "publish": "devvit publish"
+  },
+  "dependencies": {
+    "@devvit/public-api": "0.13.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.11.0"
+  },
+  "type": "module",
+  "license": "BSD-3-Clause"
+}

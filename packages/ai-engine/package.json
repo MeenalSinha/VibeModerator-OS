@@ -1,0 +1,10 @@
+{
+  "name": "@vibemod/ai-engine",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@vibemod/shared": "workspace:*",
+    "openai": "^4.28.0"
+  }
+}

@@ -1,0 +1,1 @@
+export { ModMindPage } from './AllPages';
