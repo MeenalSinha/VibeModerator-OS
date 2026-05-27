@@ -43,7 +43,7 @@ simulateRouter.post('/', async (c) => {
     orderBy: { priority: 'asc' },
   });
 
-  const result = await simulator.simulate(body.input, rules as never);
+  const result = await simulator.simulate(body.input as never, rules as never);
 
   return c.json<ApiResponse<typeof result>>({
     success: true,

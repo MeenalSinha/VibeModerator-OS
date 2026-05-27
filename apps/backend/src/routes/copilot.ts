@@ -60,7 +60,7 @@ copilotRouter.post('/chat', async (c) => {
     });
   }
 
-  const history = (session.messages as CopilotMessage[]) || [];
+  const history = (session.messages as unknown as CopilotMessage[]) || [];
 
   // Build enriched context
   let enrichedContext = body.context || {};
