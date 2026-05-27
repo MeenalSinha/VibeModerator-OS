@@ -11,8 +11,8 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "db:generate": "cd packages/db && npx prisma generate",
-    "db:migrate": "cd packages/db && npx prisma migrate dev",
+    "db:generate": "cd packages/db && npx prisma generate --schema=src/schema/schema.prisma",
+    "db:migrate": "cd packages/db && npx prisma migrate dev --schema=src/schema/schema.prisma",
     "db:seed": "cd packages/db && npx prisma db seed",
     "docker:up": "docker-compose -f infrastructure/docker/docker-compose.yml up -d",
     "docker:down": "docker-compose -f infrastructure/docker/docker-compose.yml down"
