@@ -36,7 +36,12 @@ app.use('*', prettyJSON());
 app.use(
   '*',
   cors({
-    origin: [process.env.FRONTEND_URL || 'http://localhost:3000', 'http://localhost:3001'],
+    origin: [
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173',
+      'https://vibe-moderator-os-web.vercel.app'
+    ],
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
     credentials: true,
