@@ -19,7 +19,7 @@ const SimulateSchema = z.object({
     postTitle: z.string().optional(),
     postBody: z.string().optional(),
     commentBody: z.string().optional(),
-    authorUsername: z.string(),
+    authorUsername: z.string().default('unknown'),
     authorAccountAge: z.number(),
     authorKarma: z.number(),
     authorIsBanned: z.boolean().default(false),

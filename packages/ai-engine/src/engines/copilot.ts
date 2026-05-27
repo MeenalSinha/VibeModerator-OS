@@ -61,7 +61,7 @@ export class ModGPTCopilot {
       activeRules?: string;
     }
   ): Promise<CopilotResponse> {
-    const contextBlock = this.buildContextBlock(context);
+    const contextBlock = this.buildContextBlock(context as Record<string, unknown>);
 
     const systemWithContext = contextBlock
       ? `${MODGPT_SYSTEM_PROMPT}\n\n=== CURRENT CONTEXT ===\n${contextBlock}`
