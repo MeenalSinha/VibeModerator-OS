@@ -12,12 +12,15 @@ VibeModerator OS is an AI-powered moderation operating system built to protect a
 
 ## 🚀 Getting Started
 
-To get the most out of VibeModerator OS, you need to connect this app to your backend dashboard.
+To get the most out of VibeModerator OS, you need to connect this app to your backend cloud infrastructure.
 
 1. Install the app on your subreddit.
-2. Ensure you have the VibeModerator OS backend running.
-3. Configure your `VIBEMOD_BACKEND_URL` and `VIBEMOD_API_SECRET` in the Devvit settings.
-4. Set up your subreddit's custom AI rules in your dashboard!
+2. Go to your subreddit's **Mod Tools** -> **VibeModerator OS** -> **Settings**.
+3. Configure the following Installation Settings:
+   - **VibeModerator OS Backend URL:** The URL of your Render API backend (e.g. `https://vibemoderator-os.onrender.com`)
+   - **VibeModerator OS Dashboard URL:** The URL of your Vercel frontend (e.g. `https://vibe-moderator-os-web.vercel.app`)
+4. Configure the **API Secret** globally via the Devvit CLI: `npx devvit settings set VIBEMOD_API_SECRET <your-secret>`
+5. Set up your subreddit's custom AI rules in your dashboard!
 
 ## 🔒 Privacy & Data
 
